@@ -1,0 +1,241 @@
+#+Title: A Unix Process Safari
+#+Author: Colin Rymer
+#+OPTIONS: toc:nil num:nil reveal_slide_number:nil
+#+REVEAL_ROOT: .
+#+REVEAL_HLEVEL: 100
+#+REVEAL_EXTRA_CSS: ./local.css
+
+* A Herd of Processes in the Wild
+  :PROPERTIES:
+  :reveal_background: ./ps.png
+  :reveal_background_trans: slide
+  :END:
+* But First, We Must Go Back in Time 
+** The Babbage Engine
+  :PROPERTIES:
+  :reveal_background: ./babbage-engine.jpeg
+  :reveal_background_trans: slide
+  :CUSTOM_ID: invisible
+  :END:
+
+** ENIAC
+  :PROPERTIES:
+  :reveal_background: ./eniac.jpg
+  :reveal_background_trans: slide
+  :CUSTOM_ID: invisible
+  :END:
+   
+* The Rise of the Operating Systems
+* Single Program execution
+** System/360
+  :PROPERTIES:
+  :reveal_background: ./system360.jpg
+  :reveal_background_trans: slide
+  :CUSTOM_ID: invisible
+  :END:
+
+* Runtime libraries
+* Evolving Towards Unix
+* Evolving Towards Unix (cont.)
+  :PROPERTIES:
+  :CUSTOM_ID: invisible
+  :END:
+  #+ATTR_REVEAL: :frag (appear)
+  - Multics
+  - Uniplexed Information and Computing Service
+  - Unix, POSIX, Single Unix Specification
+  - Linux
+* Back to processes
+* Disecting a process
+   - code
+   - memory
+   - resources managed by the OS
+   - security state
+   - process state/context
+* *nix Processes
+   - %cpu       percentage CPU usage (alias pcpu)
+   - %mem       percentage memory usage (alias pmem)
+   - acflag     accounting flag (alias acflg)
+   - args       command and arguments
+   - comm       command
+   - command    command and arguments
+   - cpu        short-term CPU usage factor (for scheduling)
+   - etime      elapsed running time
+   - flags      the process flags, in hexadecimal (alias f)
+   - gid        processes group id (alias group)
+   - inblk      total blocks read (alias inblock)
+   - jobc       job control count
+   - ktrace     tracing flags
+   - ktracep    tracing vnode
+   - lim        memoryuse limit
+   - logname    login name of user who started the session
+   - lstart     time started
+   - majflt     total page faults
+   - minflt     total page reclaims
+   - msgrcv     total messages received (reads from pipes/sockets)
+   - msgsnd     total messages sent (writes on pipes/sockets)
+   - nice       nice value (alias ni)
+   - nivcsw     total involuntary context switches
+   - nsigs      total signals taken (alias nsignals)
+   - nswap      total swaps in/out
+   - nvcsw      total voluntary context switches
+   - nwchan     wait channel (as an address)
+   - oublk      total blocks written (alias oublock)
+   - p_ru       resource usage (valid only for zombie)
+   - paddr      swap address
+   - pagein     pageins (same as majflt)
+   - pgid       process group number
+   - pid        process ID
+   - ppid       parent process ID
+   - pri        scheduling priority
+   - re         core residency time (in seconds; 127 = infinity)
+   - rgid       real group ID
+   - rss        resident set size
+   - ruid       real user ID
+   - ruser      user name (from ruid)
+   - sess       session ID
+   - sig        pending signals (alias pending)
+   - sigmask    blocked signals (alias blocked)
+   - sl         sleep time (in seconds; 127 = infinity)
+   - start      time started
+   - state      symbolic process state (alias stat)
+   - svgid      saved gid from a setgid executable
+   - svuid      saved UID from a setuid executable
+   - tdev       control terminal device number
+   - time       accumulated CPU time, user + system (alias cputime)
+   - tpgid      control terminal process group ID
+   - tsess      control terminal session ID
+   - tsiz       text size (in Kbytes)
+   - tt         control terminal name (two letter abbreviation)
+   - tty        full name of control terminal
+   - ucomm      name to be used for accounting
+   - uid        effective user ID
+   - upr        scheduling priority on return from system call (alias usrpri)
+   - user       user name (from UID)
+   - utime      user CPU time (alias putime)
+   - vsz        virtual size in Kbytes (alias vsize)
+   - wchan      wait channel (as a symbolic name)
+   - wq         total number of workqueue threads
+   - wqb        number of blocked workqueue threads
+   - wqr        number of running workqueue threads
+   - wql        workqueue limit status (C = constrained thread limit, T = total thread limit)
+   - xstat      exit or stop status (valid only for stopped or zombie process)
+* The Circle of Life
+    :PROPERTIES:
+    :reveal_background: ./lionking.gif
+    :reveal_background_trans: slide
+    :END:
+* Birth
+- Args
+- Working Directory
+- Environment Variables
+- Exit Handlers
+- Resource Limits
+- Memory (Text, Data, BSS, Stack, Heap)
+- Parent
+* Family
+Process Groups and Sessions
+* Orphans
+    :PROPERTIES:
+    :reveal_background: ./annie.gif
+    :reveal_background_trans: slide
+    :END:
+* When a parent dies, PID 1 adopts the process.
+* Learning to Talk
+  Inter-process Communication
+* Signals
+   Lots of different signals
+   
+   All can be trapped but SIGKILL and SIGSTOP
+** SIGHUP
+   Hangup - often used for reloading by daemons
+** SIGINT
+   Ctrl+C - interrupt the process; by default, this terminates the process
+** SIGQUIT
+   Quit and do a core dump
+** SIGTRAP   
+   Sent when an exception or trap occurs that the process wants to know about
+** SIGABRT
+   Abort the process
+** SIGKILL
+   Immediately terminate the process; cannot be blocked
+   
+   Caveats:
+   - Processes that are in the blocked state will not die until they wake up again
+   - PID 1 is special and can ignore the signal
+   - Uninterruptibly sleeping processes won't respond until they awake
+** SIGALRM
+   Sent when real or computer time clock elapses
+** SIGTERM
+   Nearly the same as SIGINT, allows the process to clean up during exit
+** SIGUSR1 & SIGUSR2
+   User defined for whatever desired purpose
+* File Descriptors
+  - STDIN, STDOUT, STDERR always expected
+  - Others created as needed:
+    + Regular files
+    + Device files
+    + Domain sockets
+    + Named pipes
+* Shared Memory
+  Fast but plenty of gotchas
+
+* Threads
+  Essentially lightweight processes that live within a process
+
+  Shared memory (mostly)
+  
+* Growing Up
+  :PROPERTIES:
+  :reveal_background: ./growing-up.gif
+  :reveal_background_trans: slide
+  :END:
+
+** Fork
+  
+  #+BEGIN_QUOTE 
+  fork() creates a new process by duplicating the calling process.  The
+  new process is referred to as the child process.  The calling process
+  is referred to as the parent process.
+  #+END_QUOTE
+
+** Fork (cont.)
+   
+  #+BEGIN_QUOTE 
+  The child process and the parent process run in separate memory
+  spaces.  At the time of fork() both memory spaces have the same
+  content.  Memory writes, file mappings (mmap(2)), and unmappings
+  (munmap(2)) performed by one of the processes do not affect the
+  other.
+  
+            -- http://man7.org/linux/man-pages/man2/fork.2.html
+  #+END_QUOTE
+
+** Exec
+  
+  #+BEGIN_QUOTE 
+  execve() executes the program referred to by pathname.  This causes
+  the program that is currently being run by the calling process to be
+  replaced with a new program, with newly initialized stack, heap, and
+  (initialized and uninitialized) data segments.
+  
+            -- http://man7.org/linux/man-pages/man2/execve.2.html
+  #+END_QUOTE
+
+** Death
+  exit or abort
+** Exit code
+ (a process's dying words)
+    
+* Dead Processes
+  :PROPERTIES:
+  :reveal_background: ./bring-out-your-dead.gif
+  :reveal_background_trans: slide
+  :CUSTOM_ID: invisible
+  :END:
+* Zombies
+  :PROPERTIES:
+  :reveal_background: ./not-dead-yet.gif
+  :reveal_background_trans: slide
+  :END:
+* END

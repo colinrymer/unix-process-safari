@@ -1,0 +1,12 @@
+#invisible {
+  display: none;
+}
+
+.tiny-list {
+  flex: 1;
+  font-size: 0.3em;
+}
+
+.container {
+  display: flex;
+}

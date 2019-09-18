@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>A Unix Process Safari</title>
+<meta name="author" content="Colin Rymer"/>
+<style type="text/css">
+.underline { text-decoration: underline; }
+</style>
+<link rel="stylesheet" href="./css/reveal.css"/>
+
+<link rel="stylesheet" href="./css/theme/moon.css" id="theme"/>
+
+<link rel="stylesheet" href="./local.css"/>
+
+<!-- If the query includes 'print-pdf', include the PDF print sheet -->
+<script>
+    if( window.location.search.match( /print-pdf/gi ) ) {
+        var link = document.createElement( 'link' );
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = './css/print/pdf.css';
+        document.getElementsByTagName( 'head' )[0].appendChild( link );
+    }
+</script>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+<section id="sec-title-slide">
+<h1 class="title">A Unix Process Safari</h1><h2 class="author">Colin Rymer</h2>
+</section>
+
+<section>
+<section id="slide-orge84c4d9" data-background="./ps.png" data-background-transition="slide">
+<h2 id="orge84c4d9">A Herd of Processes in the Wild</h2>
+</section>
+</section>
+<section>
+<section id="slide-org493443a">
+<h2 id="org493443a">But First, We Must Go Back in Time</h2>
+<div class="outline-text-2" id="text-org493443a">
+</div>
+</section>
+</section>
+<section>
+<section id="slide-invisible" data-background="./babbage-engine.jpeg" data-background-transition="slide">
+<h3 id="invisible">The Babbage Engine</h3>
+
+</section>
+</section>
+<section>
+<section id="slide-invisible" data-background="./eniac.jpg" data-background-transition="slide">
+<h3 id="invisible">ENIAC</h3>
+
+</section>
+</section>
+<section>
+<section id="slide-org67b9424">
+<h2 id="org67b9424">The Rise of the Operating Systems</h2>
+</section>
+</section>
+<section>
+<section id="slide-org126d864">
+<h2 id="org126d864">Single Program execution</h2>
+<div class="outline-text-2" id="text-org126d864">
+</div>
+</section>
+</section>
+<section>
+<section id="slide-invisible" data-background="./system360.jpg" data-background-transition="slide">
+<h3 id="invisible">System/360</h3>
+
+</section>
+</section>
+<section>
+<section id="slide-orgce314bf">
+<h2 id="orgce314bf">Runtime libraries</h2>
+</section>
+</section>
+<section>
+<section id="slide-org4fdbe1e">
+<h2 id="org4fdbe1e">Evolving Towards Unix</h2>
+</section>
+</section>
+<section>
+<section id="slide-invisible">
+<h2 id="invisible">Evolving Towards Unix (cont.)</h2>
+<ul>
+<li class="fragment appear">Multics</li>
+<li class="fragment appear">Uniplexed Information and Computing Service</li>
+<li class="fragment appear">Unix, POSIX, Single Unix Specification</li>
+<li class="fragment appear">Linux</li>
+
+</ul>
+</section>
+</section>
+<section>
+<section id="slide-org40ac16b">
+<h2 id="org40ac16b">Back to processes</h2>
+</section>
+</section>
+<section>
+<section id="slide-orgba5c7ee">
+<h2 id="orgba5c7ee">Disecting a process</h2>
+<ul>
+<li>code</li>
+<li>memory</li>
+<li>resources managed by the OS</li>
+<li>security state</li>
+<li>process state/context</li>
+
+</ul>
+</section>
+</section>
+<section>
+<section id="slide-org8870fd3">
+<h2 id="org8870fd3">*nix Processes</h2>
+<div class="container">
+<ul class="tiny-list">
+<li>%cpu      - percentage CPU usage (alias pcpu)</li>
+<li>%mem      - percentage memory usage (alias pmem)</li>
+<li>acflag    - accounting flag (alias acflg)</li>
+<li>args      - command and arguments</li>
+<li>comm      - command</li>
+<li>command   - command and arguments</li>
+<li>cpu       - short-term CPU usage factor (for scheduling)</li>
+<li>etime     - elapsed running time</li>
+<li>flags     - the process flags, in hexadecimal (alias f)</li>
+<li>gid       - processes group id (alias group)</li>
+<li>inblk     - total blocks read (alias inblock)</li>
+<li>jobc      - job control count</li>
+<li>ktrace    - tracing flags</li>
+<li>ktracep   - tracing vnode</li>
+<li>lim       - memoryuse limit</li>
+<li>logname   - login name of user who started the session</li>
+<li>lstart    - time started</li>
+<li>majflt    - total page faults</li>
+<li>minflt    - total page reclaims</li>
+<li>msgrcv    - total messages received (reads from pipes/sockets)</li>
+<li>msgsnd    - total messages sent (writes on pipes/sockets)</li>
+<li>nice      - nice value (alias ni)</li>
+<li>nivcsw    - total involuntary context switches</li>
+<li>nsigs     - total signals taken (alias nsignals)</li>
+<li>nswap     - total swaps in/out</li>
+<li>nvcsw     - total voluntary context switches</li>
+<li>nwchan    - wait channel (as an address)</li>
+<li>oublk     - total blocks written (alias oublock)</li>
+<li>p_ru      - resource usage (valid only for zombie)</li>
+<li>paddr     - swap address</li>
+<li>pagein    - pageins (same as majflt)</li>
+<li>pgid      - process group number</li>
+<li>pid       - process ID</li>
+<li>ppid      - parent process ID</li>
+</ul>
+<ul class="tiny-list">
+<li>pri       - scheduling priority</li>
+<li>re        - core residency time (in seconds; 127 = infinity)</li>
+<li>rgid      - real group ID</li>
+<li>rss       - resident set size</li>
+<li>ruid      - real user ID</li>
+<li>ruser     - user name (from ruid)</li>
+<li>sess      - session ID</li>
+<li>sig       - pending signals (alias pending)</li>
+<li>sigmask   - blocked signals (alias blocked)</li>
+<li>sl        - sleep time (in seconds; 127 = infinity)</li>
+<li>start     - time started</li>
+<li>state     - symbolic process state (alias stat)</li>
+<li>svgid     - saved gid from a setgid executable</li>
+<li>svuid     - saved UID from a setuid executable</li>
+<li>tdev      - control terminal device number</li>
+<li>time      - accumulated CPU time, user + system (alias cputime)</li>
+<li>tpgid     - control terminal process group ID</li>
+<li>tsess     - control terminal session ID</li>
+<li>tsiz      - text size (in Kbytes)</li>
+<li>tt        - control terminal name (two letter abbreviation)</li>
+<li>tty       - full name of control terminal</li>
+<li>ucomm     - name to be used for accounting</li>
+<li>uid       - effective user ID</li>
+<li>upr       - scheduling priority on return from system call (alias usrpri)</li>
+<li>user      - user name (from UID)</li>
+<li>utime     - user CPU time (alias putime)</li>
+<li>vsz       - virtual size in Kbytes (alias vsize)</li>
+<li>wchan     - wait channel (as a symbolic name)</li>
+<li>wq        - total number of workqueue threads</li>
+<li>wqb       - number of blocked workqueue threads</li>
+<li>wqr       - number of running workqueue threads</li>
+<li>wql       - workqueue limit status (C = constrained thread limit, T = total thread limit)</li>
+<li>xstat     - exit or stop status (valid only for stopped or zombie process)</li>
+
+</ul>
+</div>
+</section>
+</section>
+<section>
+<section id="slide-org69b1f32" data-background="./lionking.gif" data-background-transition="slide">
+<h2 id="org69b1f32">The Circle of Life</h2>
+</section>
+</section>
+<section>
+<section id="slide-org9975be4">
+<h2 id="org9975be4">Birth</h2>
+<ul>
+<li>Args</li>
+<li>Working Directory</li>
+<li>Environment Variables</li>
+<li>Exit Handlers</li>
+<li>Resource Limits</li>
+<li>Memory (Text, Data, BSS, Stack, Heap)</li>
+<li>Parent</li>
+
+</ul>
+</section>
+</section>
+<section>
+<section id="slide-orgaae7e87">
+<h2 id="orgaae7e87">Family</h2>
+<p>
+Process Groups and Sessions
+</p>
+</section>
+</section>
+<section>
+<section id="slide-org85cb278" data-background="./annie.gif" data-background-transition="slide">
+<h2 id="org85cb278">Orphans</h2>
+</section>
+</section>
+<section>
+<section id="slide-orgc1470e7">
+<h2 id="orgc1470e7">When a parent dies, PID 1 adopts the process.</h2>
+</section>
+</section>
+<section>
+<section id="slide-org309e5e1">
+<h2 id="org309e5e1">Learning to Talk</h2>
+<p>
+Inter-process Communication
+</p>
+</section>
+</section>
+<section>
+<section id="slide-org8b0cebe">
+<h2 id="org8b0cebe">Signals</h2>
+<p>
+Lots of different signals
+</p>
+
+<p>
+All can be trapped but SIGKILL and SIGSTOP
+</p>
+</section>
+</section>
+<section>
+<section id="slide-orgc5a4bed">
+<h3 id="orgc5a4bed">SIGHUP</h3>
+<p>
+Hangup - often used for reloading by daemons
+</p>
+</section>
+</section>
+<section>
+<section id="slide-org75890f8">
+<h3 id="org75890f8">SIGINT</h3>
+<p>
+Ctrl+C - interrupt the process; by default, this terminates the process
+</p>
+</section>
+</section>
+<section>
+<section id="slide-org11c3bcf">
+<h3 id="org11c3bcf">SIGQUIT</h3>
+<p>
+Quit and do a core dump
+</p>
+</section>
+</section>
+<section>
+<section id="slide-orgba14ebb">
+<h3 id="orgba14ebb">SIGTRAP</h3>
+<p>
+Sent when an exception or trap occurs that the process wants to know about
+</p>
+</section>
+</section>
+<section>
+<section id="slide-org7d721cf">
+<h3 id="org7d721cf">SIGABRT</h3>
+<p>
+Abort the process
+</p>
+</section>
+</section>
+<section>
+<section id="slide-org74e8d5b">
+<h3 id="org74e8d5b">SIGKILL</h3>
+<p>
+Immediately terminate the process; cannot be blocked
+</p>
+
+<p>
+Caveats:
+</p>
+<ul>
+<li>Processes that are in the blocked state will not die until they wake up again</li>
+<li>PID 1 is special and can ignore the signal</li>
+<li>Uninterruptibly sleeping processes won't respond until they awake</li>
+
+</ul>
+</section>
+</section>
+<section>
+<section id="slide-orge2821a6">
+<h3 id="orge2821a6">SIGALRM</h3>
+<p>
+Sent when real or computer time clock elapses
+</p>
+</section>
+</section>
+<section>
+<section id="slide-orgda27688">
+<h3 id="orgda27688">SIGTERM</h3>
+<p>
+Nearly the same as SIGINT, allows the process to clean up during exit
+</p>
+</section>
+</section>
+<section>
+<section id="slide-org0a9ff50">
+<h3 id="org0a9ff50">SIGUSR1 &amp; SIGUSR2</h3>
+<p>
+User defined for whatever desired purpose
+</p>
+</section>
+</section>
+<section>
+<section id="slide-org3db5692">
+<h2 id="org3db5692">File Descriptors</h2>
+<ul>
+<li>STDIN, STDOUT, STDERR always expected</li>
+<li>Others created as needed:
+<ul>
+<li>Regular files</li>
+<li>Device files</li>
+<li>Domain sockets</li>
+<li>Named pipes</li>
+
+</ul></li>
+
+</ul>
+</section>
+</section>
+<section>
+<section id="slide-orga1af52a">
+<h2 id="orga1af52a">Shared Memory</h2>
+<p>
+Fast but plenty of gotchas
+</p>
+
+</section>
+</section>
+<section>
+<section id="slide-org45ad103">
+<h2 id="org45ad103">Threads</h2>
+<p>
+Essentially lightweight processes that live within a process
+</p>
+
+<p>
+Shared memory (mostly)
+</p>
+
+</section>
+</section>
+<section>
+<section id="slide-org6605b8b" data-background="./growing-up.gif" data-background-transition="slide">
+<h2 id="org6605b8b">Growing Up</h2>
+</section>
+</section>
+<section>
+<section id="slide-orgbf94fd7">
+<h3 id="orgbf94fd7">Fork</h3>
+<blockquote>
+<p>
+fork() creates a new process by duplicating the calling process.  The
+new process is referred to as the child process.  The calling process
+is referred to as the parent process.
+</p>
+</blockquote>
+
+</section>
+</section>
+<section>
+<section id="slide-org6b1f36d">
+<h3 id="org6b1f36d">Fork (cont.)</h3>
+<blockquote>
+<p>
+The child process and the parent process run in separate memory
+spaces.  At the time of fork() both memory spaces have the same
+content.  Memory writes, file mappings (mmap(2)), and unmappings
+(munmap(2)) performed by one of the processes do not affect the
+other.
+</p>
+
+<p>
+&#x2013; <a href="http://man7.org/linux/man-pages/man2/fork.2.html">http://man7.org/linux/man-pages/man2/fork.2.html</a>
+</p>
+</blockquote>
+
+</section>
+</section>
+<section>
+<section id="slide-org15117ff">
+<h3 id="org15117ff">Exec</h3>
+<blockquote>
+<p>
+execve() executes the program referred to by pathname.  This causes
+the program that is currently being run by the calling process to be
+replaced with a new program, with newly initialized stack, heap, and
+(initialized and uninitialized) data segments.
+</p>
+
+<p>
+&#x2013; <a href="http://man7.org/linux/man-pages/man2/execve.2.html">http://man7.org/linux/man-pages/man2/execve.2.html</a>
+</p>
+</blockquote>
+
+</section>
+</section>
+<section>
+<section id="slide-orge111a93">
+<h3 id="orge111a93">Death</h3>
+<p>
+exit or abort
+</p>
+</section>
+</section>
+<section>
+<section id="slide-org7978aa3">
+<h3 id="org7978aa3">Exit code</h3>
+<p>
+(a process's dying words)
+</p>
+
+</section>
+</section>
+<section>
+<section id="slide-invisible" data-background="./bring-out-your-dead.gif" data-background-transition="slide">
+<h2 id="invisible">Dead Processes</h2>
+</section>
+</section>
+<section>
+<section id="slide-orga53d775" data-background="./not-dead-yet.gif" data-background-transition="slide">
+<h2 id="orga53d775">Zombies</h2>
+</section>
+</section>
+<section>
+<section id="slide-org31e085e">
+<h2 id="org31e085e">END</h2>
+</section>
+</section>
+</div>
+</div>
+<script src="./lib/js/head.min.js"></script>
+<script src="./js/reveal.js"></script>
+<script>
+// Full list of configuration options available here:
+// https://github.com/hakimel/reveal.js#configuration
+Reveal.initialize({
+
+controls: true,
+progress: true,
+history: false,
+center: true,
+slideNumber: false,
+rollingLinks: false,
+keyboard: true,
+mouseWheel: false,
+fragmentInURL: false,
+hashOneBasedIndex: false,
+pdfSeparateFragments: true,
+
+overview: true,
+
+theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+transition: Reveal.getQueryHash().transition || 'convex', // see README of reveal.js for options
+transitionSpeed: 'default',
+
+// Optional libraries used to extend reveal.js
+dependencies: [
+ { src: './plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: './plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: './plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } },
+ { src: './plugin/search/search.js', async: true, condition: function() { return !!document.body.classList; } },
+ { src: './plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } }]
+
+});
+</script>
+</body>
+</html>
